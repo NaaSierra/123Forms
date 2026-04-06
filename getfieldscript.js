@@ -1,49 +1,40 @@
 (function() {
-    function log(msg) {
-        console.log("[Hype Contract Sync]: " + msg);
+    function getFormValue(dataId) {
+        // Busca o elemento pelo data-id (único e estável no seu HTML)
+        var container = document.querySelector('[data-id="' + dataId + '"]');
+        if (!container) return null;
+        
+        var input = container.querySelector('input, textarea, select');
+        return input ? input.value : null;
     }
 
-    function sync() {
-        // IDs extraídos do seu HTML real
-        var idEmpresa = "120890147";
-        var idSignatario = "120890282";
+    function updateContractDisplay() {
+        // IDs confirmados no seu arquivo HTML
+        var empresaVal = getFormValue("120890147");  // Company Name
+        var nomeVal = getFormValue("120890282");     // Full Name
 
-        // Localiza os inputs usando o atributo data-id que é fixo no 123FormBuilder
-        var inputEmp = document.querySelector('[data-id="' + idEmpresa + '"] input');
-        var inputSig = document.querySelector('[data-id="' + idSignatario + '"] input');
-        
-        // Localiza os spans onde o texto deve aparecer
         var displayEmp = document.getElementById("display_empresa");
         var displaySig = document.getElementById("display_signatario");
 
-        if (displayEmp || displaySig) {
-            var atualizar = function() {
-                if (inputEmp && displayEmp) {
-                    displayEmp.innerText = inputEmp.value || "________________";
-                }
-                if (inputSig && displaySig) {
-                    displaySig.innerText = inputSig.value || "________________";
-                }
-            };
-
-            // Adiciona os escutadores de eventos se os inputs existirem na página atual
-            if (inputEmp && !inputEmp.getAttribute('data-sync-active')) {
-                inputEmp.addEventListener("input", atualizar);
-                inputEmp.setAttribute('data-sync-active', 'true');
-                log("Sincronização ativada para Empresa");
-            }
-            if (inputSig && !inputSig.getAttribute('data-sync-active')) {
-                inputSig.addEventListener("input", atualizar);
-                inputSig.setAttribute('data-sync-active', 'true');
-                log("Sincronização ativada para Signatário");
-            }
-
-            // Sempre tenta atualizar (necessário para quando muda de página)
-            atualizar();
+        // Atualiza se encontrar os campos de destino no HTML Block
+        if (displayEmp && empresaVal !== null) {
+            displayEmp.innerText = empresaVal || "________________";
+        }
+        if (displaySig && nomeVal !== null) {
+            displaySig.innerText = nomeVal || "________________";
         }
     }
 
-    // O 123FormBuilder reconstrói a página, então precisamos rodar o script repetidamente
-    log("Script carregado. Iniciando monitoramento...");
-    setInterval(sync, 800);
+    // Monitora qualquer digitação ou mudança no formulário inteiro
+    document.addEventListener('input', function() {
+        updateContractDisplay();
+    });
+
+    // Monitora cliques (como o botão "Próxima Página") para forçar atualização
+    document.addEventListener('click', function() {
+        setTimeout(updateContractDisplay, 100);
+    });
+
+    // Loop de segurança para garantir atualização constante (ex: quando muda de página)
+    setInterval(updateContractDisplay, 1000);
 })();
