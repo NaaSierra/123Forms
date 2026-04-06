@@ -1,20 +1,24 @@
-// Este log DEVE aparecer no console se o link estiver certo
-console.log("--- HYPE CONTRACT SYNC ATIVADO ---");
+// Este log DEVE aparecer no console (F12) se o link estiver funcionando
+console.log("--- HYPE SYNC: SCRIPT CARREGADO COM SUCESSO ---");
 
-setInterval(function() {
-    // IDs extraídos do seu HTML real da gamescom
-    const inputEmpresa = document.getElementById("text-00000010");
-    const inputNome = document.getElementById("text-00000020");
-    
-    // Alvos no seu Bloco HTML
-    const displayEmpresa = document.getElementById("display_empresa");
-    const displaySignatario = document.getElementById("display_signatario");
+(function() {
+    function sync() {
+        // Seletores baseados no seu HTML real da gamescom
+        const inputEmpresa = document.querySelector('[data-id="120890147"] input');
+        const inputNome = document.querySelector('[data-id="120890282"] input');
+        
+        // Localiza onde o texto deve aparecer usando as classes
+        const displayEmpresa = document.querySelector('.hype-company');
+        const displayNome = document.querySelector('.hype-name');
 
-    if (displayEmpresa && inputEmpresa) {
-        displayEmpresa.innerText = inputEmpresa.value.trim() || "________________";
+        if (displayEmpresa && inputEmpresa) {
+            displayEmpresa.innerText = inputEmpresa.value.trim() || "________________";
+        }
+        if (displayNome && inputNome) {
+            displayNome.innerText = inputNome.value.trim() || "________________";
+        }
     }
 
-    if (displaySignatario && inputNome) {
-        displaySignatario.innerText = inputNome.value.trim() || "________________";
-    }
-}, 500); // Tenta atualizar a cada meio segundo
+    // Roda a cada 500ms para garantir que funcione mesmo se o formulário atualizar
+    setInterval(sync, 500);
+})();
