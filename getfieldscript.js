@@ -1,35 +1,49 @@
 (function() {
-    function vincularContrato() {
-        // IDs que você confirmou no Inspector
-        var idEmpresa = "text-00000010"; 
-        var idSignatario = "text-00000020"; 
+    function log(msg) {
+        console.log("[Hype Contract Sync]: " + msg);
+    }
 
-        // Tenta encontrar os inputs e os locais de exibição
-        var inputEmp = document.getElementById(idEmpresa);
-        var inputSig = document.getElementById(idSignatario);
+    function sync() {
+        // IDs extraídos do seu HTML real
+        var idEmpresa = "120890147";
+        var idSignatario = "120890282";
+
+        // Localiza os inputs usando o atributo data-id que é fixo no 123FormBuilder
+        var inputEmp = document.querySelector('[data-id="' + idEmpresa + '"] input');
+        var inputSig = document.querySelector('[data-id="' + idSignatario + '"] input');
+        
+        // Localiza os spans onde o texto deve aparecer
         var displayEmp = document.getElementById("display_empresa");
         var displaySig = document.getElementById("display_signatario");
 
-        // Se encontrou os alvos de exibição, tenta preencher
         if (displayEmp || displaySig) {
-            
             var atualizar = function() {
-                if (inputEmp && displayEmp) displayEmp.innerText = inputEmp.value || "________________";
-                if (inputSig && displaySig) displaySig.innerText = inputSig.value || "________________";
+                if (inputEmp && displayEmp) {
+                    displayEmp.innerText = inputEmp.value || "________________";
+                }
+                if (inputSig && displaySig) {
+                    displaySig.innerText = inputSig.value || "________________";
+                }
             };
 
-            // Se os inputs estiverem na mesma página, adiciona o evento de digitação
-            if (inputEmp) inputEmp.addEventListener("input", atualizar);
-            if (inputSig) inputSig.addEventListener("input", atualizar);
+            // Adiciona os escutadores de eventos se os inputs existirem na página atual
+            if (inputEmp && !inputEmp.getAttribute('data-sync-active')) {
+                inputEmp.addEventListener("input", atualizar);
+                inputEmp.setAttribute('data-sync-active', 'true');
+                log("Sincronização ativada para Empresa");
+            }
+            if (inputSig && !inputSig.getAttribute('data-sync-active')) {
+                inputSig.addEventListener("input", atualizar);
+                inputSig.setAttribute('data-sync-active', 'true');
+                log("Sincronização ativada para Signatário");
+            }
 
-            // Tenta buscar do armazenamento local caso o usuário tenha vindo de outra página
+            // Sempre tenta atualizar (necessário para quando muda de página)
             atualizar();
         }
     }
 
-    // Executa ao carregar e monitora mudanças no formulário (navegação entre páginas)
-    var observer = new MutationObserver(vincularContrato);
-    observer.observe(document.body, { childList: true, subtree: true });
-    
-    window.addEventListener("load", vincularContrato);
+    // O 123FormBuilder reconstrói a página, então precisamos rodar o script repetidamente
+    log("Script carregado. Iniciando monitoramento...");
+    setInterval(sync, 800);
 })();
