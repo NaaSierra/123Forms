@@ -1,38 +1,35 @@
 (function() {
-    function iniciarSincronizacao() {
-        // IDs que você identificou no Inspector
+    function vincularContrato() {
+        // IDs que você confirmou no Inspector
         var idEmpresa = "text-00000010"; 
         var idSignatario = "text-00000020"; 
 
+        // Tenta encontrar os inputs e os locais de exibição
         var inputEmp = document.getElementById(idEmpresa);
         var inputSig = document.getElementById(idSignatario);
+        var displayEmp = document.getElementById("display_empresa");
+        var displaySig = document.getElementById("display_signatario");
 
-        // Verifica se os campos existem na página atual
-        if (inputEmp && inputSig) {
-            var atualizarTexto = function() {
-                var displayEmp = document.getElementById("display_empresa");
-                var displaySig = document.getElementById("display_signatario");
-
-                if (displayEmp) displayEmp.innerText = inputEmp.value || "________________";
-                if (displaySig) displaySig.innerText = inputSig.value || "________________";
+        // Se encontrou os alvos de exibição, tenta preencher
+        if (displayEmp || displaySig) {
+            
+            var atualizar = function() {
+                if (inputEmp && displayEmp) displayEmp.innerText = inputEmp.value || "________________";
+                if (inputSig && displaySig) displaySig.innerText = inputSig.value || "________________";
             };
 
-            // Escuta a digitação para atualizar o contrato instantaneamente
-            inputEmp.addEventListener("input", atualizarTexto);
-            inputSig.addEventListener("input", atualizarTexto);
-            
-            // Executa uma vez para preencher caso o navegador tenha auto-completado
-            atualizarTexto();
-        } else {
-            // Se os campos ainda não carregaram, tenta novamente em meio segundo
-            setTimeout(iniciarSincronizacao, 500);
+            // Se os inputs estiverem na mesma página, adiciona o evento de digitação
+            if (inputEmp) inputEmp.addEventListener("input", atualizar);
+            if (inputSig) inputSig.addEventListener("input", atualizar);
+
+            // Tenta buscar do armazenamento local caso o usuário tenha vindo de outra página
+            atualizar();
         }
     }
 
-    // Garante que o script rode após o carregamento da página
-    if (document.readyState === "complete") {
-        iniciarSincronizacao();
-    } else {
-        window.addEventListener("load", iniciarSincronizacao);
-    }
+    // Executa ao carregar e monitora mudanças no formulário (navegação entre páginas)
+    var observer = new MutationObserver(vincularContrato);
+    observer.observe(document.body, { childList: true, subtree: true });
+    
+    window.addEventListener("load", vincularContrato);
 })();
