@@ -1,40 +1,27 @@
 (function() {
-    function getFormValue(dataId) {
-        // Busca o elemento pelo data-id (único e estável no seu HTML)
-        var container = document.querySelector('[data-id="' + dataId + '"]');
-        if (!container) return null;
+    function atualizarAssinatura() {
+        // IDs extraídos do seu HTML real
+        const campoEmpresa = document.querySelector('[data-id="120890147"] input');
+        const campoNome = document.querySelector('[data-id="120890282"] input');
         
-        var input = container.querySelector('input, textarea, select');
-        return input ? input.value : null;
-    }
+        const displayEmpresa = document.getElementById('display_empresa');
+        const displaySignatario = document.getElementById('display_signatario');
 
-    function updateContractDisplay() {
-        // IDs confirmados no seu arquivo HTML
-        var empresaVal = getFormValue("120890147");  // Company Name
-        var nomeVal = getFormValue("120890282");     // Full Name
-
-        var displayEmp = document.getElementById("display_empresa");
-        var displaySig = document.getElementById("display_signatario");
-
-        // Atualiza se encontrar os campos de destino no HTML Block
-        if (displayEmp && empresaVal !== null) {
-            displayEmp.innerText = empresaVal || "________________";
+        // Atualiza a Empresa (for and on behalf of)
+        if (campoEmpresa && displayEmpresa) {
+            displayEmpresa.innerText = campoEmpresa.value || "________________";
         }
-        if (displaySig && nomeVal !== null) {
-            displaySig.innerText = nomeVal || "________________";
+
+        // Atualiza o Signatário (Signed by)
+        if (campoNome && displaySignatario) {
+            displaySignatario.innerText = campoNome.value || "________________";
         }
     }
 
-    // Monitora qualquer digitação ou mudança no formulário inteiro
-    document.addEventListener('input', function() {
-        updateContractDisplay();
-    });
+    // Ouve a digitação em tempo real na página
+    document.addEventListener('input', atualizarAssinatura);
 
-    // Monitora cliques (como o botão "Próxima Página") para forçar atualização
-    document.addEventListener('click', function() {
-        setTimeout(updateContractDisplay, 100);
-    });
-
-    // Loop de segurança para garantir atualização constante (ex: quando muda de página)
-    setInterval(updateContractDisplay, 1000);
+    // Garante que o texto apareça mesmo que o navegador preencha automaticamente
+    window.addEventListener('load', atualizarAssinatura);
+    setInterval(atualizarAssinatura, 1000); 
 })();
