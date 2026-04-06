@@ -1,27 +1,38 @@
 (function() {
-    function atualizarAssinatura() {
-        // IDs extraídos do seu HTML real
-        const campoEmpresa = document.querySelector('[data-id="120890147"] input');
-        const campoNome = document.querySelector('[data-id="120890282"] input');
-        
-        const displayEmpresa = document.getElementById('display_empresa');
-        const displaySignatario = document.getElementById('display_signatario');
+    console.log("Hype Sync: Script iniciado.");
 
-        // Atualiza a Empresa (for and on behalf of)
-        if (campoEmpresa && displayEmpresa) {
-            displayEmpresa.innerText = campoEmpresa.value || "________________";
+    function atualizarContrato() {
+        // IDs exatos encontrados no seu HTML:
+        // Empresa: data-id="120890147" ou id="text-00000010"
+        // Nome: data-id="120890282" ou id="text-00000020"
+        
+        const inputEmpresa = document.getElementById("text-00000010") || document.querySelector('[data-id="120890147"] input');
+        const inputNome = document.getElementById("text-00000020") || document.querySelector('[data-id="120890282"] input');
+        
+        const displayEmpresa = document.getElementById("display_empresa");
+        const displaySignatario = document.getElementById("display_signatario");
+
+        // Verifica se encontrou os destinos no bloco HTML
+        if (!displayEmpresa || !displaySignatario) {
+            // Se não encontrar os spans, o script para aqui para não dar erro
+            return; 
         }
 
-        // Atualiza o Signatário (Signed by)
-        if (campoNome && displaySignatario) {
-            displaySignatario.innerText = campoNome.value || "________________";
+        // Atualiza o texto. Se o campo estiver vazio, mantém os sublinhados.
+        if (inputEmpresa) {
+            const valorEmp = inputEmpresa.value.trim();
+            displayEmpresa.innerText = valorEmp !== "" ? valorEmp : "________________";
+        }
+
+        if (inputNome) {
+            const valorNome = inputNome.value.trim();
+            displaySignatario.innerText = valorNome !== "" ? valorNome : "________________";
         }
     }
 
-    // Ouve a digitação em tempo real na página
-    document.addEventListener('input', atualizarAssinatura);
+    // Tenta atualizar sempre que o utilizador digita
+    document.addEventListener('input', atualizarContrato);
 
-    // Garante que o texto apareça mesmo que o navegador preencha automaticamente
-    window.addEventListener('load', atualizarAssinatura);
-    setInterval(atualizarAssinatura, 1000); 
+    // Backup: Força a atualização a cada 500ms (ajuda se o formulário mudar de estado)
+    setInterval(atualizarContrato, 500);
 })();
